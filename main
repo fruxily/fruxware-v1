@@ -693,6 +693,7 @@ local TabLock     = Window:AddTab("Lock")
 local TabResolver = Window:AddTab("Resolver")
 local TabCamera   = Window:AddTab("Camera")
 local TabSilent   = Window:AddTab("Silent")
+local TabMisc     = Window:AddTab("Misc")
 local TabConfigs  = Window:AddTab("Configs")
 
 -- ═════════════════════════════════════════
@@ -904,6 +905,102 @@ GBSilentFov:AddInput("fovSize", { Text = "FOV Size", Default = "125", Numeric = 
 local silentInfoTarget = GBSilentInfo:AddLabel("Target: None")
 local silentInfoState  = GBSilentInfo:AddLabel("State: Off")
 local silentInfoFov    = GBSilentInfo:AddLabel("FOV: 125")
+
+-- ═════════════════════════════════════════
+--               MISC TAB
+-- ═════════════════════════════════════════
+local GBMisc = TabMisc:AddLeftGroupbox("Movement")
+
+-- Internal state
+getgenv().WalkSpeedValue = 587
+getgenv().JumpPowerValue = 50
+local wsEnabled = false
+local jpEnabled = false
+
+local miscHumanoid = nil
+if LocalPlayer.Character then
+    miscHumanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+end
+
+local wsConn = nil
+local jpConn = nil
+
+local function applyWalkSpeed()
+    if wsConn then wsConn:Disconnect() wsConn = nil end
+    if not miscHumanoid then return end
+    if wsEnabled then
+        miscHumanoid.WalkSpeed = getgenv().WalkSpeedValue
+        wsConn = miscHumanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if wsEnabled then
+                miscHumanoid.WalkSpeed = getgenv().WalkSpeedValue
+            end
+        end)
+    else
+        miscHumanoid.WalkSpeed = 16
+    end
+end
+
+local function applyJumpPower()
+    if jpConn then jpConn:Disconnect() jpConn = nil end
+    if not miscHumanoid then return end
+    if jpEnabled then
+        miscHumanoid.JumpPower = getgenv().JumpPowerValue
+        jpConn = miscHumanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+            if jpEnabled then
+                miscHumanoid.JumpPower = getgenv().JumpPowerValue
+            end
+        end)
+    else
+        miscHumanoid.JumpPower = 50
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid")
+    miscHumanoid = char:FindFirstChildOfClass("Humanoid")
+    applyWalkSpeed()
+    applyJumpPower()
+end)
+
+GBMisc:AddToggle("wsEnabled", {
+    Text     = "Enable WalkSpeed",
+    Default  = false,
+    Callback = function(v)
+        wsEnabled = v
+        applyWalkSpeed()
+    end,
+})
+
+GBMisc:AddInput("wsValue", {
+    Text        = "WalkSpeed Value",
+    Default     = "587",
+    Numeric     = true,
+    Placeholder = "587",
+    Callback    = function(v)
+        getgenv().WalkSpeedValue = tonumber(v) or 587
+        applyWalkSpeed()
+    end,
+})
+
+GBMisc:AddToggle("jpEnabled", {
+    Text     = "Enable JumpPower",
+    Default  = false,
+    Callback = function(v)
+        jpEnabled = v
+        applyJumpPower()
+    end,
+})
+
+GBMisc:AddInput("jpValue", {
+    Text        = "JumpPower Value",
+    Default     = "50",
+    Numeric     = true,
+    Placeholder = "50",
+    Callback    = function(v)
+        getgenv().JumpPowerValue = tonumber(v) or 50
+        applyJumpPower()
+    end,
+})
 
 -- ═════════════════════════════════════════
 --        SAVEMANAGER / THEME
