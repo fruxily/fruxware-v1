@@ -1,0 +1,1039 @@
+-- FruxWare V1 (Buyers Build)
+-- Aimlock + Resolver sourced from Psalms.Tech
+
+-- ═════════════════════════════════════════
+--            LOADING SCREEN + AUDIO
+-- ═════════════════════════════════════════
+local _Players = game:GetService('Players')
+local _TweenService = game:GetService('TweenService')
+local u3 = {
+    guiDuration = 5,
+    mainText = '🤑 Frux Is A Good Coder 🤑',
+    loadingText = 'Not Loaded |FruxWare| ❌',
+    loadedText = 'Loaded |FruxWare| ✅',
+    creditsText = 'Thanks For Using This Script (Credits to frux for creating).',
+    countdownTextEnabled = true,
+    countdownTextDuration = 5,
+    mainTextDuration = 1,
+    loadingTextDuration = 1,
+    loadedTextDuration = 1,
+    creditsTextDuration = 1,
+    font = Enum.Font.Arcade,
+}
+local _PlayerGui = _Players.LocalPlayer:WaitForChild('PlayerGui')
+local _ScreenGui = Instance.new('ScreenGui', _PlayerGui)
+
+_ScreenGui.Name = 'BlurGui'
+
+local _BlurEffect = Instance.new('BlurEffect', game:GetService('Lighting'))
+_BlurEffect.Name = 'BlurEffect'
+_BlurEffect.Size = 0
+
+-- Play audio at start
+local _Sound = Instance.new('Sound')
+_Sound.SoundId = 'rbxassetid://119592479688994'
+_Sound.Volume = 1
+_Sound.Parent = game:GetService('SoundService')
+_Sound:Play()
+
+local function v14(p7, p8, p9, p10, p11, p12)
+    local _TextLabel = Instance.new('TextLabel', _ScreenGui)
+    _TextLabel.Name = p7
+    _TextLabel.BackgroundTransparency = 1
+    _TextLabel.Position = p9
+    _TextLabel.Size = p10
+    _TextLabel.Font = u3.font
+    _TextLabel.Text = p8
+    _TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    _TextLabel.TextScaled = true
+    _TextLabel.TextStrokeTransparency = 0.8
+    _TextLabel.TextSize = p11
+    _TextLabel.Visible = p12
+    return _TextLabel
+end
+
+local _TextLabel2     = v14('TextLabel',     u3.mainText,    UDim2.new(0.5, -200, 0.5, -50),  UDim2.new(0, 400, 0, 100), 40, true)
+local _CreditsLabel   = v14('CreditsLabel',  u3.creditsText, UDim2.new(0.5, -200, 0.5, 60),   UDim2.new(0, 400, 0, 50),  8,  true)
+local _CountdownLabel = v14('CountdownLabel','',             UDim2.new(0.5, -200, 0.5, -100), UDim2.new(0, 400, 0, 50),  20, false)
+
+local function v22(p18, p19, p20)
+    local _ImageLabel = Instance.new('ImageLabel', _ScreenGui)
+    _ImageLabel.Name = p18
+    _ImageLabel.BackgroundTransparency = 1
+    _ImageLabel.Position = p20
+    _ImageLabel.Size = UDim2.new(0, 200, 0, 200)
+    _ImageLabel.Image = 'rbxassetid://' .. p19
+    _ImageLabel.ScaleType = Enum.ScaleType.Fit
+    _ImageLabel.Visible = true
+    Instance.new('UICorner', _ImageLabel).CornerRadius = UDim.new(0.1, 0)
+    return _ImageLabel
+end
+
+v22('LeftImage',  'yourassetid', UDim2.new(0.05, 0,    0.5, -100))
+v22('RightImage', 'yourassetid', UDim2.new(0.95, -200, 0.5, -100))
+
+local function v27(p23)
+    local _UIStroke = Instance.new('UIStroke', p23)
+    _UIStroke.Thickness = 2
+    _UIStroke.Transparency = 0.5
+    spawn(function()
+        local v25 = 0
+        while p23 and p23.Parent do
+            v25 = (v25 + 1) % 360
+            local v26 = Color3.fromHSV(v25 / 360, 1, 1)
+            _UIStroke.Color = v26
+            p23.TextColor3 = v26
+            wait(0.01)
+        end
+    end)
+end
+
+v27(_TextLabel2)
+v27(_CreditsLabel)
+v27(_CountdownLabel)
+
+_TweenService:Create(_BlurEffect, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = 20}):Play()
+
+local function v29()
+    if u3.countdownTextEnabled then
+        _CountdownLabel.Visible = true
+        for v28 = u3.countdownTextDuration, 0, -1 do
+            _CountdownLabel.Text = 'Please wait ' .. v28 .. ' seconds'
+            wait(1)
+        end
+        _CountdownLabel.Text = 'Please wait 0 seconds'
+        wait(1)
+        _CountdownLabel.Visible = false
+    end
+end
+
+local function v33(p30, p31, p32)
+    p30.Text = p31
+    wait(p32)
+end
+
+v33(_TextLabel2, u3.mainText,    u3.mainTextDuration)
+v33(_TextLabel2, u3.loadingText, u3.loadingTextDuration)
+v29()
+v33(_TextLabel2, u3.loadedText,  u3.loadedTextDuration)
+wait(u3.creditsTextDuration)
+
+_ScreenGui:Destroy()
+_BlurEffect:Destroy()
+
+-- ═════════════════════════════════════════
+--            MAIN SCRIPT STARTS HERE
+-- ═════════════════════════════════════════
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fruxily/fun/refs/heads/main/ac/nothing"))()
+
+local Players        = game:GetService("Players")
+local RunService     = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Stats          = game:GetService("Stats")
+local TweenService   = game:GetService("TweenService")
+local LocalPlayer    = Players.LocalPlayer
+local Camera         = workspace.CurrentCamera
+local Mouse          = LocalPlayer:GetMouse()
+
+-- ─────────────────────────────────────────
+--           RAYCAST PARAMS
+-- ─────────────────────────────────────────
+local rayParams = RaycastParams.new()
+rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+rayParams.IgnoreWater = true
+
+-- ═════════════════════════════════════════
+--         PSALMS.TECH STATE TABLE
+-- ═════════════════════════════════════════
+local Psalms = {
+    Tech = {
+        Enabled            = false,
+        RealPart           = "HumanoidRootPart",
+        SelectedPart       = "HumanoidRootPart",
+        AirPart            = "RightFoot",
+        HorizontalPrediction  = 0.1,
+        VerticalPrediction    = 0.1,
+        HorizontalPrediction2 = 0.1,
+        VerticalPrediction2   = 0.1,
+        jumpoffset         = 0,
+        jumpoffset2        = -0.3,
+        jumpoffset3        = 0.270,
+        UseVertical        = false,
+        ResolverEnabled    = false,
+        RESOLVER           = "MoveDirection",
+        AutoPrediction     = false,
+        APMODE             = "Calculate",
+        Camera             = false,
+        CamPrediction1     = 0.1,
+        CamPrediction2     = 0.1,
+        CamResolverEnabled = false,
+        UseExternal        = false,
+        smoothness         = 0.1,
+        easingStyle        = "Sine",
+        easingDirection    = "Out",
+        LockType           = "Namecall",
+        SilentMode         = false,
+        AutoAir            = false,
+        KOCheck            = false,
+        WallCheck          = false,
+        FriendCheck        = false,
+        TeamCheck          = false,
+        SeatedCheck        = false,
+        UnlockOnKO         = false,
+        ShootDelay         = 0.22,
+        TargLockBind       = Enum.KeyCode.Q,
+        AntiAimViewer      = false,
+        AutoShoot          = false,
+        VelocityDot        = false,
+        LookAt             = false,
+        ViewAt             = false,
+        bool_at_tp         = false,
+        JumpBreak          = false,
+        speedvalue         = 1,
+        MacroSpeed         = 0.2,
+        cframespeedtoggle  = false,
+    }
+}
+Psalms.Tech.SelectedPart = Psalms.Tech.RealPart
+
+-- ═════════════════════════════════════════
+--         TARGET LOCK STATE
+-- ═════════════════════════════════════════
+local TargBindEnabled = true
+local TargetPlr       = nil
+local targetHealth    = nil
+
+-- ═════════════════════════════════════════
+--         TRIGGERBOT STATE
+-- ═════════════════════════════════════════
+local triggerEnabled  = false
+local keybindEnabled  = false
+local keybind         = ""
+local tbPrediction    = 0
+local tbDelay         = 0.03
+local lastShot        = 0
+local checks = {
+    KnifeCheck       = false,
+    ForcefieldCheck  = false,
+    KnockedCheck     = false,
+    AmmoCheck        = false,
+}
+
+-- ═════════════════════════════════════════
+--         AUTO-PREDICTION TABLES
+-- ═════════════════════════════════════════
+local predictionTable = {
+    {20,0.08960952},{30,0.11252476},{50,0.13544},{65,0.1264236},
+    {70,0.12533},{80,0.139340},{100,0.141987},{110,0.144634},
+    {120,0.147281},{130,0.149928},{140,0.152575},{150,0.155222},
+    {160,0.157869},{170,0.160516},{180,0.163163},{190,0.165810},
+    {200,0.168457},{210,0.171104},{220,0.173751},{230,0.176398},
+    {240,0.179045},{250,0.181692},{260,0.184339},{270,0.186986},
+    {280,0.189633},{290,0.192280},{300,0.194927},
+}
+local sigmaTable = {{0,0.04070},{30,0.05078}}
+
+local function getPing()
+    local ok, val = pcall(function()
+        return tonumber(string.split(
+            Stats.Network.ServerStatsItem["Data Ping"]:GetValueString(), "(")[1])
+    end)
+    return (ok and val) or 0
+end
+
+local function closestInTable(tbl, ping)
+    local best, bestDist = nil, math.huge
+    for _, entry in ipairs(tbl) do
+        local d = math.abs(ping - entry[1])
+        if d < bestDist then bestDist = d; best = entry[2] end
+    end
+    return best
+end
+
+local function calculatePred(ping) return (ping / 1000) + 0.037 end
+
+local function updatePrediction()
+    local pg = getPing()
+    if Psalms.Tech.AutoPrediction then
+        local m = Psalms.Tech.APMODE
+        if m == "Default" then
+            local v = closestInTable(sigmaTable, pg)
+            if v then Psalms.Tech.HorizontalPrediction = v Psalms.Tech.VerticalPrediction = v end
+        elseif m == "Sets Based" then
+            local v = closestInTable(predictionTable, pg)
+            if v then Psalms.Tech.HorizontalPrediction = v Psalms.Tech.VerticalPrediction = v * 0.910 end
+        elseif m == "Math Based" then
+            local function gp(fa,ad) return fa * math.log(pg+1) + ad end
+            Psalms.Tech.HorizontalPrediction = gp(0.105,-0.342665)
+            Psalms.Tech.VerticalPrediction   = gp(0.1,-0.3405)
+        elseif m == "Calculate" then
+            local v = calculatePred(pg)
+            Psalms.Tech.HorizontalPrediction = v Psalms.Tech.VerticalPrediction = v
+        end
+    end
+end
+
+-- ═════════════════════════════════════════
+--    TARGET FUTURE POSITION
+-- ═════════════════════════════════════════
+local lastTick = tick()
+local lastPos  = nil
+
+local function TargetFuturePosition()
+    if not (TargetPlr and TargetPlr.Character) then return nil end
+    local selectedPart = Psalms.Tech.SelectedPart
+    local targetPart = TargetPlr.Character:FindFirstChild(selectedPart)
+    if not targetPart then return nil end
+
+    local currentTick = tick()
+    local currentPos  = targetPart.CFrame
+    local velocity    = Vector3.new(0,0,0)
+
+    if Psalms.Tech.ResolverEnabled then
+        if Psalms.Tech.RESOLVER == "Recalculate" then
+            if lastPos then
+                local delta = currentTick - lastTick
+                if delta > 0 then
+                    local diff = currentPos.Position - lastPos.Position
+                    velocity = diff / delta
+                end
+            end
+            lastPos  = currentPos
+            lastTick = currentTick
+        elseif Psalms.Tech.RESOLVER == "MoveDirection" then
+            local hum = TargetPlr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then velocity = hum.MoveDirection * hum.WalkSpeed end
+        elseif Psalms.Tech.RESOLVER == "LookVector" then
+            velocity = targetPart.CFrame.LookVector * Psalms.Tech.HorizontalPrediction * 1.5
+        end
+    else
+        velocity = targetPart.AssemblyLinearVelocity
+    end
+
+    local hp = Psalms.Tech.HorizontalPrediction
+    local vp = Psalms.Tech.VerticalPrediction
+    local cp = currentPos.Position
+
+    if Psalms.Tech.UseVertical then
+        return Vector3.new(
+            cp.X + (velocity.X / hp),
+            cp.Y + (velocity.Y / vp),
+            cp.Z + (velocity.Z / hp)
+        ) + Vector3.new(0, Psalms.Tech.jumpoffset, 0)
+    else
+        return Vector3.new(
+            cp.X + (velocity.X * hp),
+            cp.Y + (velocity.Y * vp),
+            cp.Z + (velocity.Z * hp)
+        ) + Vector3.new(0, Psalms.Tech.jumpoffset, 0)
+    end
+end
+
+-- ═════════════════════════════════════════
+--        HELPER CHECKS
+-- ═════════════════════════════════════════
+local function isPlayerKO(player)
+    if not player.Character then return false end
+    local be = player.Character:FindFirstChild("BodyEffects")
+    if be then
+        local ko = be:FindFirstChild("K.O")
+        if ko and ko:IsA("BoolValue") and ko.Value then return true end
+    end
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp and hrp.Anchored then return true end
+    return false
+end
+
+local function isPlayerSeated(player)
+    if not player.Character then return false end
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    return hum and hum.SeatPart ~= nil
+end
+
+local function isOnSameTeam(player)
+    if not player.Team or not LocalPlayer.Team then return false end
+    return player.Team == LocalPlayer.Team
+end
+
+local function isBehindWall(player)
+    if not player or not player.Character then return true end
+    local tp = player.Character:FindFirstChild("HumanoidRootPart")
+    if not tp then return true end
+    local origin = Camera.CFrame.Position
+    local dir = (tp.Position - origin)
+    local rp = RaycastParams.new()
+    rp.FilterDescendantsInstances = {LocalPlayer.Character, player.Character}
+    rp.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = workspace:Raycast(origin, dir, rp)
+    return result and result.Instance ~= nil
+end
+
+-- ═════════════════════════════════════════
+--    SILENT MODE TARGET SELECTION
+-- ═════════════════════════════════════════
+local fovRadius = 125
+
+local function findClosestInFov()
+    local center = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+    local best, bestDist = nil, math.huge
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p == LocalPlayer then continue end
+        local char = p.Character
+        if not char then continue end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum or hum.Health <= 0 then continue end
+        if Psalms.Tech.KOCheck     and isPlayerKO(p)       then continue end
+        if Psalms.Tech.FriendCheck and LocalPlayer:IsFriendsWith(p.UserId) then continue end
+        if Psalms.Tech.TeamCheck   and isOnSameTeam(p)     then continue end
+        if Psalms.Tech.SeatedCheck and isPlayerSeated(p)   then continue end
+        if Psalms.Tech.WallCheck   and isBehindWall(p)     then continue end
+        local sp, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+        if not onScreen then continue end
+        local dist = (Vector2.new(sp.X, sp.Y) - center).Magnitude
+        if dist < fovRadius and dist < bestDist then
+            bestDist = dist
+            best = p
+        end
+    end
+    return best
+end
+
+local function getClosestToMouse()
+    local best, bestDist = nil, math.huge
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p == LocalPlayer then continue end
+        local char = p.Character
+        if not char then continue end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then continue end
+        if Psalms.Tech.KOCheck     and isPlayerKO(p)       then continue end
+        if Psalms.Tech.FriendCheck and LocalPlayer:IsFriendsWith(p.UserId) then continue end
+        if Psalms.Tech.TeamCheck   and isOnSameTeam(p)     then continue end
+        if Psalms.Tech.SeatedCheck and isPlayerSeated(p)   then continue end
+        if Psalms.Tech.WallCheck   and isBehindWall(p)     then continue end
+        local sp, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+        if not onScreen then continue end
+        local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+        if dist < bestDist then bestDist = dist best = p end
+    end
+    return best
+end
+
+-- ═════════════════════════════════════════
+--    AIMLOCK HOOKS
+-- ═════════════════════════════════════════
+local FireServerArgs = {
+    "UpdateMousePos","GetMousePos","MousePos","MOUSE",
+    "MousePosUpdate","UpdateMousePosI2","UpdateMousePosI","UpdateAim"
+}
+local currentFireArg = nil
+
+if game.PlaceId == 9825515356 or game.PlaceId == 2788229376 then
+    Psalms.Tech.LockType = "Index"
+else
+    Psalms.Tech.LockType = "Namecall"
+end
+
+local indexHook
+do
+    local ok = pcall(function()
+        indexHook = hookmetamethod(Mouse, "__index", newcclosure(function(self, index)
+            if index == "Hit"
+                and Psalms.Tech.LockType == "Index"
+                and Psalms.Tech.Enabled
+                and TargetPlr and TargetPlr.Character
+                and Psalms.Tech.SelectedPart then
+                local pos = TargetFuturePosition()
+                if pos then return CFrame.new(pos) end
+            end
+            return indexHook(self, index)
+        end))
+    end)
+    if not ok then indexHook = nil end
+end
+
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+mt.__namecall = newcclosure(function(...)
+    local args = {...}
+    local method = getnamecallmethod()
+    if Psalms.Tech.Enabled and Psalms.Tech.LockType == "Namecall" then
+        if TargetPlr and TargetPlr.Character and method == "FireServer" then
+            for _, name in ipairs(FireServerArgs) do
+                if args[2] == name then
+                    currentFireArg = name
+                    if not Psalms.Tech.AntiAimViewer then
+                        args[3] = TargetFuturePosition()
+                        return oldNamecall(table.unpack(args))
+                    end
+                end
+            end
+        end
+    end
+    return oldNamecall(...)
+end)
+setreadonly(mt, true)
+
+RunService.Heartbeat:Connect(function()
+    if Psalms.Tech.Camera and TargetPlr and TargetPlr.Character and Psalms.Tech.SelectedPart then
+        local part = TargetPlr.Character:FindFirstChild(Psalms.Tech.SelectedPart)
+        if not part then return end
+        if Psalms.Tech.WallCheck and isBehindWall(TargetPlr) then return end
+        if Psalms.Tech.KOCheck   and isPlayerKO(TargetPlr)   then return end
+
+        local vel = part.AssemblyLinearVelocity
+        local targetPos
+        if Psalms.Tech.UseExternal then
+            targetPos = Vector3.new(
+                part.Position.X + (vel.X / Psalms.Tech.CamPrediction1),
+                part.Position.Y + (vel.Y / Psalms.Tech.CamPrediction2),
+                part.Position.Z + (vel.Z / Psalms.Tech.CamPrediction1)
+            )
+        else
+            targetPos = Vector3.new(
+                part.Position.X + (vel.X * Psalms.Tech.CamPrediction1),
+                part.Position.Y + (vel.Y * Psalms.Tech.CamPrediction2),
+                part.Position.Z + (vel.Z * Psalms.Tech.CamPrediction1)
+            )
+        end
+
+        Camera.CFrame = Camera.CFrame:Lerp(
+            CFrame.new(Camera.CFrame.Position, targetPos),
+            math.clamp(Psalms.Tech.smoothness, 0.01, 1)
+        )
+    end
+end)
+
+local function inAir()
+    if TargetPlr and TargetPlr.Character and TargetPlr.Character:FindFirstChild("Humanoid") then
+        local state = TargetPlr.Character.Humanoid:GetState()
+        if state == Enum.HumanoidStateType.Freefall then
+            Psalms.Tech.jumpoffset = Psalms.Tech.jumpoffset3
+            Psalms.Tech.SelectedPart = Psalms.Tech.AirPart
+        elseif state == Enum.HumanoidStateType.Jumping then
+            Psalms.Tech.jumpoffset = Psalms.Tech.jumpoffset2
+        else
+            Psalms.Tech.SelectedPart = Psalms.Tech.RealPart
+            Psalms.Tech.jumpoffset = 0
+        end
+    end
+end
+
+local MainEvent = nil
+for _, v in pairs(game.ReplicatedStorage:GetChildren()) do
+    if v.Name == "MainEvent" or v.Name == "Bullets" or
+       v.Name == ".gg/untitledhood" or v.Name == "Remote" or
+       v.Name == "MAINEVENT" then
+        MainEvent = v break
+    end
+end
+
+local function setupToolHook(character)
+    character.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then
+            child.Activated:Connect(function()
+                if MainEvent and currentFireArg and Psalms.Tech.Enabled
+                    and TargetPlr and TargetPlr.Character
+                    and Psalms.Tech.AntiAimViewer then
+                    MainEvent:FireServer(currentFireArg, TargetFuturePosition())
+                end
+            end)
+        end
+    end)
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char) setupToolHook(char) end)
+if LocalPlayer.Character then setupToolHook(LocalPlayer.Character) end
+
+local function checkUnlock()
+    if TargetPlr and Psalms.Tech.UnlockOnKO and isPlayerKO(TargetPlr) then
+        TargBindEnabled = false
+        TargetPlr = nil
+        targetHealth = nil
+    end
+end
+
+Players.PlayerRemoving:Connect(function(p)
+    if p == TargetPlr then
+        TargBindEnabled = false
+        TargetPlr = nil
+        targetHealth = nil
+    end
+end)
+
+-- ═════════════════════════════════════════
+--        FOV CIRCLE
+-- ═════════════════════════════════════════
+local fovCircle = Drawing.new("Circle")
+fovCircle.Transparency = 0.8
+fovCircle.Thickness     = 1.5
+fovCircle.Color         = Color3.fromRGB(200, 150, 255)
+fovCircle.Filled        = false
+fovCircle.NumSides      = 128
+fovCircle.Radius        = fovRadius
+fovCircle.Visible       = false
+fovCircle.Position      = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+
+-- ═════════════════════════════════════════
+--        LOCK BUTTON (image decal)
+-- ═════════════════════════════════════════
+local lockGui = Instance.new("ScreenGui")
+lockGui.Name = "FruxLockBtn"
+lockGui.ResetOnSpawn = false
+lockGui.IgnoreGuiInset = true
+lockGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local lockBtn = Instance.new("ImageButton", lockGui)
+lockBtn.Size = UDim2.new(0, 50, 0, 50)
+lockBtn.Position = UDim2.new(1, -110, 0.5, 60)
+lockBtn.BackgroundTransparency = 1
+lockBtn.Image = "rbxassetid://84814080051995"
+lockBtn.ScaleType = Enum.ScaleType.Fit
+lockBtn.Active = true
+lockBtn.Draggable = true
+Instance.new("UICorner", lockBtn).CornerRadius = UDim.new(0, 8)
+local lbStroke = Instance.new("UIStroke", lockBtn)
+lbStroke.Color = Color3.fromRGB(100, 60, 220)
+lbStroke.Thickness = 2
+
+local function refreshLockBtn()
+    if TargetPlr then
+        lbStroke.Color = Color3.fromRGB(60, 220, 120)
+    else
+        lbStroke.Color = Color3.fromRGB(100, 60, 220)
+    end
+end
+
+local function toggleLock()
+    if not Psalms.Tech.Enabled then return end
+    if TargBindEnabled and TargetPlr then
+        TargBindEnabled = false
+        TargetPlr = nil
+        targetHealth = nil
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.AutoRotate = true
+        end
+        Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    else
+        local closest = Psalms.Tech.SilentMode and findClosestInFov() or getClosestToMouse()
+        if closest then
+            TargBindEnabled = true
+            TargetPlr = closest
+            if TargetPlr.Character and TargetPlr.Character:FindFirstChildOfClass("Humanoid") then
+                targetHealth = TargetPlr.Character.Humanoid.Health
+            end
+        end
+    end
+    refreshLockBtn()
+end
+
+lockBtn.MouseButton1Click:Connect(toggleLock)
+
+-- ═════════════════════════════════════════
+--        TRIGGERBOT HELPERS
+-- ═════════════════════════════════════════
+local function hasAmmo()
+    local char = LocalPlayer.Character
+    local tool = char and char:FindFirstChildOfClass("Tool")
+    if not tool then return false end
+    for _, name in ipairs({"CurrentAmmo","Clip","Mag","Ammo"}) do
+        local v = tool:FindFirstChild(name)
+        if v and v:IsA("IntValue") then return v.Value > 0 end
+    end
+    return true
+end
+
+local knifeKW = {"knife","blade","dagger","combat","melee","sword"}
+local function isKnife(tool)
+    if not tool then return false end
+    local n = tool.Name:lower()
+    for _, kw in ipairs(knifeKW) do if n:find(kw) then return true end end
+    return false
+end
+
+local function isValidTBTarget(model)
+    if not model then return false end
+    local hum = model:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return false end
+    if Players:GetPlayerFromCharacter(model) == LocalPlayer then return false end
+    if checks.KnifeCheck then
+        local t = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+        if isKnife(t) then return false end
+    end
+    if checks.ForcefieldCheck and model:FindFirstChildOfClass("ForceField") then return false end
+    if checks.KnockedCheck then
+        local be = model:FindFirstChild("BodyEffects")
+        local ko = be and be:FindFirstChild("K.O")
+        if ko and ko.Value then return false end
+    end
+    if checks.AmmoCheck and not hasAmmo() then return false end
+    return true
+end
+
+-- ═════════════════════════════════════════
+--        LOAD LINORIALIB
+-- ═════════════════════════════════════════
+local Lib      = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/LinoriaLib/main/Library.lua"))()
+local ThemeMgr = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/LinoriaLib/main/addons/ThemeManager.lua"))()
+local SaveMgr  = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/LinoriaLib/main/addons/SaveManager.lua"))()
+
+local Window = Lib:CreateWindow({
+    AutoShow   = true,
+    Title      = "FruxWare V1 (Buyers Build)",
+    MenuFadeTime = 0.2,
+    TabPadding = 8,
+    Center     = true,
+})
+
+local TabTrigger  = Window:AddTab("Triggerbot")
+local TabLock     = Window:AddTab("Lock")
+local TabResolver = Window:AddTab("Resolver")
+local TabCamera   = Window:AddTab("Camera")
+local TabSilent   = Window:AddTab("Silent")
+local TabConfigs  = Window:AddTab("Configs")
+
+-- ═════════════════════════════════════════
+--            TRIGGERBOT TAB
+-- ═════════════════════════════════════════
+local GBMain      = TabTrigger:AddLeftGroupbox("Triggerbot")
+local GBPredDelay = TabTrigger:AddLeftGroupbox("Prediction / Delay")
+local GBChecks    = TabTrigger:AddRightGroupbox("Checks")
+
+GBMain:AddToggle("tb", {
+    Text     = "Enable Triggerbot",
+    Default  = false,
+    Callback = function(v) triggerEnabled = v end,
+})
+GBMain:AddToggle("keyon", { Text = "Enable Keybind", Default = false, Callback = function(v) keybindEnabled = v end })
+GBMain:AddInput("key", { Text = "Keybind", Default = "", Placeholder = "e.g. Z", Callback = function(v) keybind = v:upper() end })
+GBPredDelay:AddInput("tbpred", { Text = "Prediction", Default = "", Numeric = true, Placeholder = "0",    Callback = function(v) tbPrediction = tonumber(v) or 0    end })
+GBPredDelay:AddInput("tbdel",  { Text = "Delay",      Default = "", Numeric = true, Placeholder = "0.03", Callback = function(v) tbDelay       = tonumber(v) or 0.03 end })
+GBChecks:AddToggle("knifeck", { Text = "Knife Check",      Default = false, Callback = function(v) checks.KnifeCheck      = v end })
+GBChecks:AddToggle("ffck",    { Text = "Forcefield Check", Default = false, Callback = function(v) checks.ForcefieldCheck = v end })
+GBChecks:AddToggle("knockck", { Text = "Knocked Check",    Default = false, Callback = function(v) checks.KnockedCheck    = v end })
+GBChecks:AddToggle("ammock",  { Text = "Ammo Check",       Default = false, Callback = function(v) checks.AmmoCheck       = v end })
+
+-- ═════════════════════════════════════════
+--               LOCK TAB
+-- ═════════════════════════════════════════
+local GBLock       = TabLock:AddLeftGroupbox("Target Lock")
+local GBLockOpts   = TabLock:AddLeftGroupbox("Options")
+local GBLockChecks = TabLock:AddRightGroupbox("Lock Checks")
+local GBLockInfo   = TabLock:AddRightGroupbox("Lock Info")
+
+GBLock:AddToggle("lockEnabled", {
+    Text     = "Enable Lock",
+    Default  = false,
+    Callback = function(v)
+        Psalms.Tech.Enabled = v
+        if not v then
+            TargBindEnabled = false
+            TargetPlr = nil
+            targetHealth = nil
+            refreshLockBtn()
+        end
+    end,
+})
+GBLock:AddDropdown("lockType", {
+    Text     = "Lock Method",
+    Default  = "Namecall",
+    Values   = {"Index", "Namecall"},
+    Callback = function(v) Psalms.Tech.LockType = v end,
+})
+GBLock:AddDropdown("lockHitPart", {
+    Text     = "Hit Part",
+    Default  = "HumanoidRootPart",
+    Values   = {
+        "HumanoidRootPart","Head","UpperTorso","LowerTorso",
+        "RightUpperArm","LeftUpperArm","RightHand","LeftHand",
+        "RightUpperLeg","LeftUpperLeg","RightFoot","LeftFoot"
+    },
+    Callback = function(v)
+        Psalms.Tech.RealPart     = v
+        Psalms.Tech.SelectedPart = v
+    end,
+})
+GBLock:AddDropdown("lockAirPart", {
+    Text     = "Air Part",
+    Default  = "RightFoot",
+    Values   = {
+        "HumanoidRootPart","Head","UpperTorso","LowerTorso",
+        "RightUpperArm","LeftUpperArm","RightHand","LeftHand",
+        "RightUpperLeg","LeftUpperLeg","RightFoot","LeftFoot"
+    },
+    Callback = function(v) Psalms.Tech.AirPart = v end,
+})
+GBLock:AddInput("lockHPred", { Text = "Horizontal Prediction", Default = "0.1", Numeric = true, Placeholder = "0.1",
+    Callback = function(v)
+        Psalms.Tech.HorizontalPrediction2 = tonumber(v) or 0.1
+        task.wait(0.01)
+        Psalms.Tech.HorizontalPrediction = Psalms.Tech.HorizontalPrediction2
+        Psalms.Tech.VerticalPrediction   = Psalms.Tech.VerticalPrediction2
+    end,
+})
+GBLock:AddInput("lockVPred", { Text = "Vertical Prediction", Default = "0.1", Numeric = true, Placeholder = "0.1",
+    Callback = function(v)
+        Psalms.Tech.VerticalPrediction2 = tonumber(v) or 0.1
+        task.wait(0.01)
+        Psalms.Tech.HorizontalPrediction = Psalms.Tech.HorizontalPrediction2
+        Psalms.Tech.VerticalPrediction   = Psalms.Tech.VerticalPrediction2
+    end,
+})
+GBLock:AddInput("lockJumpOff", { Text = "Jump Offset", Default = "-0.3",  Numeric = true, Callback = function(v) Psalms.Tech.jumpoffset2 = tonumber(v) or -0.3  end })
+GBLock:AddInput("lockFallOff", { Text = "Fall Offset", Default = "0.270", Numeric = true, Callback = function(v) Psalms.Tech.jumpoffset3 = tonumber(v) or 0.270 end })
+
+GBLockOpts:AddToggle("lockDivision",   { Text = "Division Mode",   Default = false, Callback = function(v) Psalms.Tech.UseVertical   = v end })
+GBLockOpts:AddToggle("lockAutoShoot",  { Text = "Auto Shoot",      Default = false, Callback = function(v) Psalms.Tech.AutoShoot     = v end })
+GBLockOpts:AddToggle("lockAutoAir",    { Text = "Auto Air",        Default = false, Callback = function(v) Psalms.Tech.AutoAir       = v end })
+GBLockOpts:AddToggle("lockUnlockKO",   { Text = "Unlock On KO",    Default = false, Callback = function(v) Psalms.Tech.UnlockOnKO   = v end })
+GBLockOpts:AddToggle("lockAntiViewer", { Text = "Anti Aim Viewer", Default = false, Callback = function(v) Psalms.Tech.AntiAimViewer = v end })
+
+GBLockChecks:AddToggle("lckKO",     { Text = "KO Check",     Default = false, Callback = function(v) Psalms.Tech.KOCheck     = v end })
+GBLockChecks:AddToggle("lckWall",   { Text = "Wall Check",   Default = false, Callback = function(v) Psalms.Tech.WallCheck   = v end })
+GBLockChecks:AddToggle("lckFriend", { Text = "Friend Check", Default = false, Callback = function(v) Psalms.Tech.FriendCheck = v end })
+GBLockChecks:AddToggle("lckTeam",   { Text = "Team Check",   Default = false, Callback = function(v) Psalms.Tech.TeamCheck   = v end })
+GBLockChecks:AddToggle("lckSeated", { Text = "Seated Check", Default = false, Callback = function(v) Psalms.Tech.SeatedCheck = v end })
+
+local lockInfoStatus = GBLockInfo:AddLabel("Status: Off")
+local lockInfoTarget = GBLockInfo:AddLabel("Target: None")
+local lockInfoPart   = GBLockInfo:AddLabel("Part: HumanoidRootPart")
+local lockInfoMethod = GBLockInfo:AddLabel("Method: Namecall")
+local lockInfoPred   = GBLockInfo:AddLabel("HPred: 0.1 | VPred: 0.1")
+
+-- ═════════════════════════════════════════
+--             RESOLVER TAB
+-- ═════════════════════════════════════════
+local GBRes     = TabResolver:AddLeftGroupbox("Resolver")
+local GBResInfo = TabResolver:AddRightGroupbox("Live Info")
+
+GBRes:AddToggle("resEnabled", {
+    Text     = "Enable Resolver",
+    Default  = false,
+    Callback = function(v) Psalms.Tech.ResolverEnabled = v end,
+})
+GBRes:AddDropdown("resMode", {
+    Text     = "Resolver Mode",
+    Default  = "MoveDirection",
+    Values   = {"MoveDirection", "LookVector", "Recalculate"},
+    Callback = function(v) Psalms.Tech.RESOLVER = v end,
+})
+GBRes:AddToggle("resAutoPred", {
+    Text     = "Auto Prediction",
+    Default  = false,
+    Callback = function(v)
+        Psalms.Tech.AutoPrediction = v
+        Psalms.Tech.HorizontalPrediction = Psalms.Tech.HorizontalPrediction2
+        Psalms.Tech.VerticalPrediction   = Psalms.Tech.VerticalPrediction2
+    end,
+})
+GBRes:AddDropdown("resAPMode", {
+    Text     = "Auto Pred Mode",
+    Default  = "Calculate",
+    Values   = {"Default","Math Based","Sets Based","Calculate"},
+    Callback = function(v) Psalms.Tech.APMODE = v end,
+})
+
+local resInfoMode   = GBResInfo:AddLabel("Mode: MoveDirection")
+local resInfoState  = GBResInfo:AddLabel("State: Disabled")
+local resInfoTarget = GBResInfo:AddLabel("Target: None")
+local resInfoPred   = GBResInfo:AddLabel("H: 0.1 | V: 0.1")
+local resInfoPing   = GBResInfo:AddLabel("Ping: 0ms")
+
+-- ═════════════════════════════════════════
+--             CAMERA TAB
+-- ═════════════════════════════════════════
+local GBCam     = TabCamera:AddLeftGroupbox("Camera Lock")
+local GBCamOpts = TabCamera:AddRightGroupbox("Camera Options")
+
+GBCam:AddToggle("camEnabled",  { Text = "Enable Camera Lock", Default = false, Callback = function(v) Psalms.Tech.Camera            = v end })
+GBCam:AddToggle("camResolver", { Text = "Camera Resolver",    Default = false, Callback = function(v) Psalms.Tech.CamResolverEnabled = v end })
+GBCam:AddToggle("camDivision", { Text = "Division Mode",      Default = false, Callback = function(v) Psalms.Tech.UseExternal        = v end })
+GBCam:AddInput("camSmooth", { Text = "Smoothness",            Default = "0.1", Numeric = true, Placeholder = "0.1", Callback = function(v) Psalms.Tech.smoothness    = tonumber(v) or 0.1 end })
+GBCam:AddInput("camHPred",  { Text = "Horizontal Prediction", Default = "0.1", Numeric = true, Placeholder = "0.1", Callback = function(v) Psalms.Tech.CamPrediction1 = tonumber(v) or 0.1 end })
+GBCam:AddInput("camVPred",  { Text = "Vertical Prediction",   Default = "0.1", Numeric = true, Placeholder = "0.1", Callback = function(v) Psalms.Tech.CamPrediction2 = tonumber(v) or 0.1 end })
+
+GBCamOpts:AddDropdown("camEasing", {
+    Text     = "Easing Style",
+    Default  = "Sine",
+    Values   = {"Linear","Quad","Cubic","Quart","Quint","Sine","Exponential","Circular","Back","Bounce","Elastic"},
+    Callback = function(v) Psalms.Tech.easingStyle = v end,
+})
+GBCamOpts:AddDropdown("camEasingDir", {
+    Text     = "Easing Direction",
+    Default  = "Out",
+    Values   = {"In","Out","InOut"},
+    Callback = function(v) Psalms.Tech.easingDirection = v end,
+})
+GBCamOpts:AddToggle("camWallCheck", { Text = "Wall Check", Default = false, Callback = function(v) Psalms.Tech.CamWallCheck = v end })
+GBCamOpts:AddToggle("camKoCheck",   { Text = "KO Check",   Default = false, Callback = function(v) Psalms.Tech.CAMKo       = v end })
+
+-- ═════════════════════════════════════════
+--             SILENT TAB
+-- ═════════════════════════════════════════
+local GBSilent     = TabSilent:AddLeftGroupbox("Silent Mode")
+local GBSilentFov  = TabSilent:AddLeftGroupbox("FOV Circle")
+local GBSilentInfo = TabSilent:AddRightGroupbox("Silent Info")
+
+GBSilent:AddToggle("silentEnabled", {
+    Text     = "Enable Silent",
+    Default  = false,
+    Callback = function(v)
+        Psalms.Tech.SilentMode = v
+        fovCircle.Visible = v
+        if not v then TargetPlr = nil refreshLockBtn() end
+    end,
+})
+GBSilentFov:AddToggle("fovVisible", {
+    Text     = "Show FOV Circle",
+    Default  = false,
+    Callback = function(v) fovCircle.Visible = v end,
+})
+
+local fovSliderLabel = GBSilentFov:AddLabel("FOV Size: 125")
+GBSilentFov:AddInput("fovSize", { Text = "FOV Size", Default = "125", Numeric = true, Placeholder = "125",
+    Callback = function(v)
+        fovRadius = tonumber(v) or 125
+        fovCircle.Radius = fovRadius
+        fovSliderLabel:SetText("FOV Size: " .. tostring(math.floor(fovRadius)))
+    end,
+})
+
+local silentInfoTarget = GBSilentInfo:AddLabel("Target: None")
+local silentInfoState  = GBSilentInfo:AddLabel("State: Off")
+local silentInfoFov    = GBSilentInfo:AddLabel("FOV: 125")
+
+-- ═════════════════════════════════════════
+--        SAVEMANAGER / THEME
+-- ═════════════════════════════════════════
+ThemeMgr:SetLibrary(Lib)
+SaveMgr:SetLibrary(Lib)
+SaveMgr:IgnoreThemeSettings()
+SaveMgr:SetIgnoreIndexes({"MenuKeybind"})
+ThemeMgr:SetFolder("frux")
+SaveMgr:SetFolder("frux/configs")
+SaveMgr:BuildConfigSection(TabConfigs)
+ThemeMgr:ApplyToTab(TabConfigs)
+ThemeMgr:ApplyTheme("Dark Blue")
+SaveMgr:LoadAutoloadConfig()
+
+-- ═════════════════════════════════════════
+--        KEYBIND LISTENER
+-- ═════════════════════════════════════════
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp or input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+    local kn = input.KeyCode.Name:upper()
+
+    if keybindEnabled and keybind ~= "" and kn == keybind then
+        triggerEnabled = not triggerEnabled
+        local t = Lib.Toggles and Lib.Toggles["tb"]
+        if t then t:SetValue(triggerEnabled) end
+    end
+
+    if input.KeyCode == Psalms.Tech.TargLockBind then
+        toggleLock()
+    end
+end)
+
+-- ═════════════════════════════════════════
+--          MAIN RENDER LOOP
+-- ═════════════════════════════════════════
+local lastUI = 0
+
+RunService.Stepped:Connect(function()
+    inAir()
+    checkUnlock()
+    updatePrediction()
+
+    if Psalms.Tech.SilentMode then
+        local found = findClosestInFov()
+        if found then
+            TargetPlr = found
+            TargBindEnabled = true
+            if TargetPlr.Character and TargetPlr.Character:FindFirstChildOfClass("Humanoid") then
+                local hp = TargetPlr.Character.Humanoid.Health
+                if not targetHealth then targetHealth = hp end
+            end
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    local now = tick()
+
+    fovCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+
+    if Psalms.Tech.AutoShoot and Psalms.Tech.Enabled and TargetPlr and TargetPlr.Character then
+        if not TargetPlr.Character:FindFirstChildOfClass("ForceField") then
+            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+            if tool then tool:Activate() end
+        end
+    end
+
+    if now - lastUI > 0.25 then
+        lastUI = now
+        local ping = getPing()
+
+        resInfoMode:SetText("Mode: "   .. Psalms.Tech.RESOLVER)
+        resInfoState:SetText("State: " .. (Psalms.Tech.ResolverEnabled and "Active" or "Disabled"))
+        resInfoPing:SetText("Ping: "   .. ping .. "ms")
+        resInfoPred:SetText(string.format("H: %.3f | V: %.3f",
+            Psalms.Tech.HorizontalPrediction, Psalms.Tech.VerticalPrediction))
+        if TargetPlr then resInfoTarget:SetText("Target: " .. TargetPlr.Name)
+        else              resInfoTarget:SetText("Target: None") end
+
+        lockInfoMethod:SetText("Method: " .. Psalms.Tech.LockType)
+        lockInfoPart:SetText("Part: "     .. Psalms.Tech.SelectedPart)
+        lockInfoPred:SetText(string.format("HPred: %.3f | VPred: %.3f",
+            Psalms.Tech.HorizontalPrediction, Psalms.Tech.VerticalPrediction))
+        if TargetPlr then
+            lockInfoTarget:SetText("Target: " .. TargetPlr.Name)
+            lockInfoStatus:SetText("Status: Locked")
+        else
+            lockInfoTarget:SetText("Target: None")
+            lockInfoStatus:SetText("Status: " .. (Psalms.Tech.Enabled and "Waiting" or "Off"))
+        end
+
+        silentInfoFov:SetText("FOV: "   .. tostring(math.floor(fovRadius)))
+        silentInfoState:SetText("State: " .. (Psalms.Tech.SilentMode and "Active" or "Off"))
+        if TargetPlr then silentInfoTarget:SetText("Target: " .. TargetPlr.Name)
+        else              silentInfoTarget:SetText("Target: None") end
+
+        refreshLockBtn()
+    end
+
+    -- Triggerbot
+    if not triggerEnabled then return end
+
+    rayParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    local cx = Camera.ViewportSize.X / 2
+    local cy = Camera.ViewportSize.Y / 2
+    local ray = Camera:ViewportPointToRay(cx, cy)
+    local origin = ray.Origin
+
+    local hit = workspace:Raycast(origin, ray.Direction * 1000, rayParams)
+    if not hit or not hit.Instance then return end
+
+    local model = hit.Instance:FindFirstAncestorOfClass("Model")
+    if not isValidTBTarget(model) then return end
+
+    local hitPos = hit.Position
+    if tbPrediction > 0 then
+        local root = model:FindFirstChild("HumanoidRootPart")
+                  or model:FindFirstChild("Torso")
+                  or model:FindFirstChild("UpperTorso")
+        if root then hitPos = root.Position + root.AssemblyLinearVelocity * tbPrediction end
+    end
+
+    local adjDir = (hitPos - origin).Unit
+    local confirm = workspace:Raycast(origin, adjDir * 1000, rayParams)
+    if confirm and confirm.Instance and confirm.Instance:IsDescendantOf(model) then
+        if now - lastShot >= tbDelay then
+            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+            if tool then tool:Activate() end
+            lastShot = now
+        end
+    end
+end)
