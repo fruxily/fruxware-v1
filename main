@@ -7,13 +7,13 @@
 local _Players = game:GetService('Players')
 local _TweenService = game:GetService('TweenService')
 local u3 = {
-    guiDuration = 5,
+    guiDuration = 4,
     mainText = '🤑 Frux Is A Good Coder 🤑',
     loadingText = 'Not Loaded |FruxWare| ❌',
     loadedText = 'Loaded |FruxWare| ✅',
     creditsText = 'Thanks For Using This Script (Credits to frux for creating).',
     countdownTextEnabled = true,
-    countdownTextDuration = 5,
+    countdownTextDuration = 4,
     mainTextDuration = 1,
     loadingTextDuration = 1,
     loadedTextDuration = 1,
